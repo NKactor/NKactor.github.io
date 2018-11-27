@@ -7,11 +7,12 @@
 </ul>
 <p>&emsp;&emsp;如：<br><figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">DATABASES = &#123;</span><br><span class="line">    <span class="string">'default'</span>: &#123;</span><br><span class="line">        <span class="string">'ENGINE'</span>: <span class="string">'django.db.backends.mysql'</span>,</span><br><span class="line">        <span class="string">'NAME'</span>: <span class="string">'dj7'</span>,</span><br><span class="line">        <span class="string">'USER'</span>: <span class="string">'root'</span>,</span><br><span class="line">        <span class="string">'PASSWORD'</span>: <span class="string">'123456'</span>,</span><br><span class="line">        <span class="string">'HOST'</span>: <span class="string">'localhost'</span>,</span><br><span class="line">        <span class="string">'PORT'</span>: <span class="number">3306</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <ul>
-<li>3.2 其次需要在项目文件夹下的<strong>init</strong>.py中添加对应的数据库驱动<br><strong>mysql如下：</strong><blockquote>
+<li>3.2 其次需要在项目文件夹下的<strong>init</strong>.py中添加对应的数据库驱动</li>
+</ul>
+<p><strong>mysql如下：</strong></p>
+<blockquote>
 <p>import pymysql  (如果没有pymysql的需要安装pymysql第三方库)<br>pymysql.install_as_MySQLdb()</p>
 </blockquote>
-</li>
-</ul>
 <h4 id="4-注册应用"><a href="#4-注册应用" class="headerlink" title="4. 注册应用"></a>4. 注册应用</h4><ul>
 <li>在项目文件下的<strong>setting</strong>.py文件中的INSTALLED_APPS最后添加应用名</li>
 </ul>
@@ -20,11 +21,11 @@
 <p>格式： python manage.py makemigrations</p>
 </blockquote>
 <ul>
-<li>此时会在项目文件夹下的migration文件夹下创建一个迁移文件<blockquote>
+<li>此时会在项目文件夹下的migration文件夹下创建一个迁移文件</li>
+</ul>
+<blockquote>
 <p>如：0001_initial.py</p>
 </blockquote>
-</li>
-</ul>
 <h4 id="6-制作迁移"><a href="#6-制作迁移" class="headerlink" title="6. 制作迁移"></a>6. 制作迁移</h4><blockquote>
 <p>格式： python manage.py migrate<br><strong> 此时在数据库中就会创建一张与模型向对应的数据库表（其中自动创建一个id字段并且自动增长和是主键）</strong></p>
 </blockquote>
