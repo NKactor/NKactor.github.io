@@ -12,9 +12,9 @@
 </blockquote>
 <p><strong>&emsp;注意：</strong>获取满足条件的对象，但是查询条件必须存在，并且查询数据条数为1条，否则都会报错<br>而filter()当查询条件不存在时返回空查询集，数据条数大于1时，返回一个列表类型的查询集</p>
 <blockquote>
-<p>对象.objects.exclude(过滤条件)<br>返回不满足条件的结果集（QuerySet），ye也可以说是过滤掉满足条件的结果集</p>
+<p>对象.objects.exclude(过滤条件)<br>返回不满足条件的结果集（QuerySet），也可以说是过滤掉满足条件的结果集</p>
 </blockquote>
-<h4 id="1-4-组合条件查询"><a href="#1-4-组合条件查询" class="headerlink" title="1.4 组合条件查询"></a>1.4 组合条件查询</h4><p><strong>&emsp;&emsp;如：</strong><br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 多个条件可以写在一个filter中</span></span><br><span class="line">stus = Student.objects.filter(<span class="attribute">age</span>=18, <span class="attribute">gender</span>=0)</span><br><span class="line"><span class="comment"># 查询年龄等于18且性别为女的学生信息</span></span><br><span class="line">stus = Student.objects.filter(<span class="attribute">age</span>=18).filter(gender=0)</span><br></pre></td></tr></table></figure></p>
+<h4 id="1-4-组合条件查询"><a href="#1-4-组合条件查询" class="headerlink" title="1.4 组合条件查询"></a>1.4 组合条件查询</h4><p><strong>&emsp;&emsp;如：</strong><br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查询年龄等于18且性别为女的学生信息</span></span><br><span class="line">stus = Student.objects.filter(<span class="attribute">age</span>=18).filter(gender=0)</span><br><span class="line"><span class="comment"># 多个条件可以写在一个filter中（推荐使用）</span></span><br><span class="line">stus = Student.objects.filter(<span class="attribute">age</span>=18, <span class="attribute">gender</span>=0)</span><br></pre></td></tr></table></figure></p>
 <h3 id="二、-从查询集中获取数据"><a href="#二、-从查询集中获取数据" class="headerlink" title="二、 从查询集中获取数据"></a>二、 从查询集中获取数据</h3><h4 id="emsp-2-1-下标获取"><a href="#emsp-2-1-下标获取" class="headerlink" title="&emsp;2.1 下标获取"></a>&emsp;2.1 下标获取</h4><blockquote>
 <p>stus = Student.objects.all()<br>如： stus[0]<br>但是注意下标越界异常</p>
 </blockquote>
