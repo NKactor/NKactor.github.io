@@ -24,8 +24,9 @@
 <p>如： stus.last()</p>
 </blockquote>
 <h3 id="三、-排序-order-by"><a href="#三、-排序-order-by" class="headerlink" title="三、 排序 order_by"></a>三、 排序 order_by</h3><blockquote>
-<p>对象.objects.order_by(排序字段)<br><figure class="highlight nsis"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">如： </span><br><span class="line">	stus = Student.objects.<span class="literal">all</span>().order_by(<span class="string">'-id'</span>)</span><br><span class="line">  <span class="comment"># 排序 order_by</span></span><br><span class="line">  <span class="comment"># 降序 -id 在sql中 id desc</span></span><br><span class="line">  <span class="comment"># 升序 id  在sql中 id asc</span></span><br></pre></td></tr></table></figure></p>
+<p>对象.objects.order_by(排序字段)</p>
 </blockquote>
+<figure class="highlight nsis"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">如： </span><br><span class="line">	stus = Student.objects.<span class="literal">all</span>().order_by(<span class="string">'-id'</span>)</span><br><span class="line">  <span class="comment"># 排序 order_by</span></span><br><span class="line">  <span class="comment"># 降序 -id 在sql中 id desc</span></span><br><span class="line">  <span class="comment"># 升序 id  在sql中 id asc</span></span><br></pre></td></tr></table></figure>
 <p><strong>&emsp;&emsp;测试可以通过values()获取对象键值对</strong></p>
 <blockquote>
 <p>如：stus.values()</p>
