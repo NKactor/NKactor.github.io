@@ -14,13 +14,8 @@
 <h4 id="emsp-emsp-2-2-模板解析"><a href="#emsp-emsp-2-2-模板解析" class="headerlink" title="&emsp;&emsp;2.2 模板解析"></a>&emsp;&emsp;2.2 模板解析</h4><pre><code>解析变量： {{ 变量 }}
 解析标签： {% 标签 %}      标签有 for/if 等
 {% for %} {% endfor %}/{% if %} {% endif %} endfor/endif 必须写
-</code></pre><h4 id="emsp-emsp-2-3-模板中的注释"><a href="#emsp-emsp-2-3-模板中的注释" class="headerlink" title="&emsp;&emsp;2.3 模板中的注释"></a>&emsp;&emsp;2.3 模板中的注释</h4><pre><code>&lt;!-- 注释1 --&gt;             原生html注释会被浏览器解释，当查看源码时会显示  
-         不会被浏览器解释并且不会在源码中显示
-{% comment %} 		多行注释不会被浏览器解释并且不会在源码中显示
-	        <p>注释3</p>
-	        <a>注释4</a>
-	    {% endcomment %}
-</code></pre><h4 id="emsp-emsp-2-4-模板循环变量"><a href="#emsp-emsp-2-4-模板循环变量" class="headerlink" title="&emsp;&emsp;2.4 模板循环变量"></a>&emsp;&emsp;2.4 模板循环变量</h4><table>
+</code></pre><h4 id="emsp-emsp-2-3-模板中的注释"><a href="#emsp-emsp-2-3-模板中的注释" class="headerlink" title="&emsp;&emsp;2.3 模板中的注释"></a>&emsp;&emsp;2.3 模板中的注释</h4><figure class="highlight twig"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="xml"><span class="comment">&lt;!-- 注释1 --&gt;</span>		原生html注释会被浏览器解释，当查看源码时会显示  </span></span><br><span class="line"><span class="xml"></span><span class="comment">&#123;# 注释2 #&#125;</span><span class="xml"> 		不会被浏览器解释并且不会在源码中显示</span></span><br><span class="line"><span class="xml"></span><span class="template-tag">&#123;% <span class="name">comment</span> %&#125;</span><span class="xml"> 		多行注释不会被浏览器解释并且不会在源码中显示</span></span><br><span class="line"><span class="xml">	<span class="tag">&lt;<span class="name">p</span>&gt;</span>注释3<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></span><br><span class="line"><span class="xml">	<span class="tag">&lt;<span class="name">a</span>&gt;</span>注释4<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span></span><br><span class="line"><span class="xml"></span><span class="template-tag">&#123;% <span class="name">endcomment</span> %&#125;</span><span class="xml"></span></span><br></pre></td></tr></table></figure>
+<h4 id="emsp-emsp-2-4-模板循环变量"><a href="#emsp-emsp-2-4-模板循环变量" class="headerlink" title="&emsp;&emsp;2.4 模板循环变量"></a>&emsp;&emsp;2.4 模板循环变量</h4><table>
 <thead>
 <tr>
 <th style="text-align:center">模板变量</th>
