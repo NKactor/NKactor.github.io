@@ -1,0 +1,200 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="个人博客"><meta name="keywords" content="python, linux, mysql, django, 前端, css, javascript, html"><title>flask中通过ORM对数据库进行CRUD操作 | NKactor</title><link rel="stylesheet" type="text/css" href="//fonts.loli.net/css?family=Source+Code+Pro"><link rel="stylesheet" type="text/css" href="/css/style.css?v=2.0.1"><link rel="stylesheet" type="text/css" href="/css/highlight.css?v=2.0.1"><link rel="Shortcut Icon" href="/favicon.ico"><link rel="bookmark" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">flask中通过ORM对数据库进行CRUD操作</h1><a id="logo" href="/.">NKactor</a><p class="description">笨鸟先飞，滴水穿石，马上就办</p></div><div id="nav-menu"><a href="/." class="current"><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div><div id="search-form"><div id="result-mask" class="hide"></div><label><input id="search-key" type="text" autocomplete="off" placeholder="Arama"></label><div id="result-wrap" class="hide"><div id="search-result"></div></div><div class="hide"><template id="search-tpl"><div class="item"><a href="/{path}" title="{title}"><div class="title">{title}</div><div class="time">{date}</div><div class="tags">{tags}</div></a></div></template></div></div></div><div id="layout" class="layout-g"><div class="layout-l"><div class="content_container"><div class="post"><h1 class="post-title">flask中通过ORM对数据库进行CRUD操作</h1><div class="post-meta"><a href="/2018/12/19/flask中通过ORM对数据库进行CRUD操作/#comments" class="comment-count"></a><p><span class="date">Dec 19, 2018</span><span><i id="busuanzi_container_page_pv"><i id="busuanzi_value_page_pv"></i><i>点击</i></i></span></p></div><div class="post-content"><center><strong>Flask中通过SQLAlchemy ORM对数据库进行CRUD操作和分页</strong></center>
+
+<h2 id="一、配置数据库"><a href="#一、配置数据库" class="headerlink" title="一、配置数据库"></a>一、配置数据库</h2><pre><code>app.config[&apos;SQLALCHEMY_DATABASE_URI&apos;] = &apos;mysql+pymysql://root:123456@127.0.0.1:3306/flaskdb7&apos;
+app.config[&apos;SQLALCHEMY_TRACK_MODIFICATIONS&apos;] = Flase
+app.init_app(app)
+</code></pre><h2 id="二、创建模型"><a href="#二、创建模型" class="headerlink" title="二、创建模型"></a>二、创建模型</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask_script <span class="keyword">import</span> SQLAlchemy</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建一个sqlalchemy对象</span></span><br><span class="line">db = SQLAlchemy()</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Student</span><span class="params">(db.Model)</span>:</span></span><br><span class="line">	id = db.Column(db.Integer, primary_key=<span class="keyword">True</span>, autoincrement=<span class="keyword">True</span>)</span><br><span class="line">	name = db.Column(db.String(<span class="number">31</span>), unique=<span class="keyword">True</span>, nullable=<span class="keyword">True</span>)</span><br><span class="line">	phone = db.Column(db.String(<span class="number">11</span>), nullable=<span class="keyword">True</span>)</span><br><span class="line"></span><br><span class="line">	age = db.Column(db.Integer, nullable=Flase)</span><br><span class="line">	gender = db.Column(db.Integer, default=<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment"># flask默认表明就是模型名小写，如果你不需要改变表明就可以不用设置</span></span><br><span class="line"></span><br><span class="line">	__tablename__ = <span class="string">'tb_student'</span></span><br></pre></td></tr></table></figure>
+<h2 id="三、对数据库进行CRUD操作"><a href="#三、对数据库进行CRUD操作" class="headerlink" title="三、对数据库进行CRUD操作"></a>三、对数据库进行CRUD操作</h2><h3 id="3-1-增加数据"><a href="#3-1-增加数据" class="headerlink" title="3.1 增加数据"></a>3.1 增加数据</h3><pre><code>在flask中增加数据需要用到SQLAlchemy的一个session回话，这里的session并不是flask请求和响应的回话session
+
+添加数据需要用到
+session.add(对象)  # 将对象添加到session中
+session.commit()   # 提交session（可以理解成提交事务，如果未提交，则所有数据都未添加到数据库）
+</code></pre><h4 id="a-增加一条"><a href="#a-增加一条" class="headerlink" title="a. 增加一条"></a>a. 增加一条</h4><pre><code># 获取一个学生对象
+stu = Student()
+stu.name = &apos;小明&apos;
+stu.phone = &apos;12345612345&apos;
+stu.age = 16
+# 添加对象到session中
+db.session.add(stu)
+# 提交事务
+db.session.commit()
+</code></pre><h4 id="b-增加多条"><a href="#b-增加多条" class="headerlink" title="b. 增加多条"></a>b. 增加多条</h4><pre><code>通过db.session.add_all()实现
+
+stus = []
+# 循环产生多个学生对象
+for _ in range(10):
+    stu = Student()
+    # 这里可能会重复
+    stu.name = &apos;小明%s&apos; % random.randint(1, 1000)
+    stu.age = random.randint(16, 28)
+    stu.phone = &apos;12345123451&apos;
+    # 把视图添加到stus列表中
+    stus.append(stu)
+# 调用add_all()方法
+db.session.add_all(stus)
+# 提交事务
+db.session.commit()
+</code></pre><h3 id="3-2-修改数据"><a href="#3-2-修改数据" class="headerlink" title="3.2 修改数据"></a>3.2 修改数据</h3><pre><code>修改类似于添加，先过滤出需要修改的学生对象，然后在修改相应的字段
+
+# 通过filter过滤出对象
+stu = Student.query.filter(Student.id == id).first()
+stu.name = username
+stu.phone = phone
+stu.age = age
+# 将对象添加到sqlalchemy中
+db.session.add(stu)
+# 提交事务
+db.session.commit()
+
+修改数据时 db.session.add(stu) 可以不写
+</code></pre><h3 id="3-3-删除数据"><a href="#3-3-删除数据" class="headerlink" title="3.3 删除数据"></a>3.3 删除数据</h3><pre><code>通过调用delete方法
+db.session.delete(对象)
+
+# 过滤出学生对象
+stu = Student.query.fliter(Student.id == id).firts()
+# 调用delete方法
+db.session.delete(stu)
+# 提交事务
+# db.session.commit()
+</code></pre><h3 id="3-4-查询操作"><a href="#3-4-查询操作" class="headerlink" title="3.4 查询操作"></a>3.4 查询操作</h3><h4 id="3-4-1-filter和get过滤"><a href="#3-4-1-filter和get过滤" class="headerlink" title="3.4.1 filter和get过滤"></a>3.4.1 filter和get过滤</h4><pre><code># 查询指定id的学生信息 filter()
+# 模型.query.filter(模型.字段 == 值)
+stu = Student.query.filter(Student.id == 3).first()
+
+# 查询指定id的学生信息 filter_by()
+stu1 = Student.query.filter_by(id=3).first()
+
+# 查询指定id的学生信息 get(pk), 只能查询主键，只能查出一条数据，返回一个查询对象
+# 主键不存在不会报错，这与Django有区别
+stu3 = Student.query.get(3)
+
+
+在filter过滤中
+first()  获取查询集中的第一个查询对象
+last()   获取查询集中的最后一个查询对象
+</code></pre><h4 id="3-4-2-查询所有"><a href="#3-4-2-查询所有" class="headerlink" title="3.4.2 查询所有"></a>3.4.2 查询所有</h4><pre><code># 查询所有的数据 all(), 返回一个列表
+stus = Student.query.all()
+</code></pre><h4 id="3-4-3-对查询集进行排序"><a href="#3-4-3-对查询集进行排序" class="headerlink" title="3.4.3 对查询集进行排序"></a>3.4.3 对查询集进行排序</h4><pre><code># 排序 升序 默认就是升序 order_by(&apos;字段/-字段&apos;) order_by(&apos;字段 asc/desc&apos;)
+stus = Student.query.order_by(&apos;age&apos;)
+stus = Student.query.order_by(&apos;age asc&apos;)
+
+# 排序 降序
+stus = Student.query.order_by(&apos;-age&apos;)
+stus = Student.query.order_by(&apos;age desc&apos;)
+
+# 实现简单分页 offset(m).limit(n) 跳过每条看(截取)n条数据
+stus = Student.query.offset(0).limit(2)
+</code></pre><h4 id="3-4-3-模糊查询"><a href="#3-4-3-模糊查询" class="headerlink" title="3.4.3 模糊查询"></a>3.4.3 模糊查询</h4><pre><code># contains(&apos;字符&apos;) 包含
+stus = Student.query.filter(Student.name.contains(&apos;哈&apos;)).all()
+
+# 以什么开头 startswith(&apos;字符&apos;)
+stus = Student.query.filter(Student.name.startswith(&apos;哈&apos;)).all()
+
+# 以什么结尾 endswith(&apos;字符&apos;)
+stus = Student.query.filter(Student.name.endswith(&apos;4&apos;)).all()
+
+# 第二位以&apos;明&apos;的学生 like() _(下划线): 匹配一个字符，% 通配符匹配多个字符
+stus = Student.query.filter(Student.name.like(&apos;_明%&apos;)).all()
+
+# 查询在某个范围内的学生信息 模型.id.in_(列表)
+stus = Student.query.filter(Student.id.in_([1, 5, 16, 18]))
+</code></pre><h4 id="3-4-4-条件和逻辑运算组合查询"><a href="#3-4-4-条件和逻辑运算组合查询" class="headerlink" title="3.4.4 条件和逻辑运算组合查询"></a>3.4.4 条件和逻辑运算组合查询</h4><pre><code># 条件查询
+# lt le gt ge 小于、小于等于、大于、大于等于
+stus = Student.query.filter(Student.age.__le__(22)).all()
+
+# 条件查询可以写 &lt;  &lt;=  &gt;  &gt;= ==
+stus = Student.query.filter(Student.age &lt;= 22).all()
+
+# 条件组合查询
+# 年龄小于22， 姓名以6结束 
+# 且关系可以用链式过滤的方法实现
+stus = Student.query.filter(Student.age &lt; 22).filter(Student.name.endswith(&apos;0&apos;)).all()
+
+# 且 关系，用逗号隔开也是且关系
+stus = Student.query.filter(Student.age &lt; 22, Student.name.endswith(&apos;0&apos;)).all()
+
+除了上面的方法还可以用sqlalchemy库里面提供的方法实现 且、或、非关系
+# from sqlalchemy import and_, or_, not_
+
+# 且 and_ 
+stus = Student.query.filter(and_(Student.age &lt; 22,Student.name.endswith(&apos;0&apos;))).all()
+
+# 或 or_
+stus = Student.query.filter(or_(Student.age &lt; 22,Student.name.endswith(&apos;0&apos;))).all()
+
+# 非 not_
+stus = Student.query.filter(not_(Student.age == 22)).all()
+</code></pre><h4 id="3-4-5-使用paginator进行分页"><a href="#3-4-5-使用paginator进行分页" class="headerlink" title="3.4.5 使用paginator进行分页"></a>3.4.5 使用paginator进行分页</h4><pre><code># paginator分页
+
+# 获取学生信息，all()返回一个列表
+students = Student.query.all()
+
+# 从get请求中获取页码，也就是请求第几页
+page = int(request.args.get(&apos;page&apos;, 1))
+
+# 将上面查询出的所有student列表丢给paginate分页
+paginate = Student.query.paginate(page, 5)
+
+# 在paginate方法中
+paginate(页码, 每页数据条数据)
+
+# 获取当前页（page）的数据列表，该方法返回一个列表，这与Django不一样，如果不用items，paginate是一个不能迭代的对象
+students = paginate.items
+</code></pre><p>&emsp;&emsp;<strong>flask中的paginate分页中的一些方法</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">方法</th>
+<th style="text-align:center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">paginate.has_prev</td>
+<td style="text-align:center">判断是否有上一页</td>
+</tr>
+<tr>
+<td style="text-align:center">paginate.has._next</td>
+<td style="text-align:center">判断是否有下一页</td>
+</tr>
+<tr>
+<td style="text-align:center">paginate.pages</td>
+<td style="text-align:center">返回总的页数</td>
+</tr>
+<tr>
+<td style="text-align:center">paginate.page_num</td>
+<td style="text-align:center">返回当前页的页码</td>
+</tr>
+<tr>
+<td style="text-align:center">paginate.prev_num</td>
+<td style="text-align:center">返回上一页的页码</td>
+</tr>
+<tr>
+<td style="text-align:center">paginate.next_num</td>
+<td style="text-align:center">返回下一页的页码</td>
+</tr>
+<tr>
+<td style="text-align:center">paginate.iter_pages()</td>
+<td style="text-align:center">返回总的页码，可迭代</td>
+</tr>
+<tr>
+<td style="text-align:center">paginate.total</td>
+<td style="text-align:center">返回总的数据条数</td>
+</tr>
+</tbody>
+</table>
+<h2 id="四、模板解析地址"><a href="#四、模板解析地址" class="headerlink" title="四、模板解析地址"></a>四、模板解析地址</h2><h3 id="4-1-无参数的反向解析url"><a href="#4-1-无参数的反向解析url" class="headerlink" title="4.1 无参数的反向解析url"></a>4.1 无参数的反向解析url</h3><pre><code>假设蓝图对象为
+blue = Blueprint(&apos;app&apos;, __name__)
+则反向解析
+{{ url_for('app.需要跳转到的函数名') }}
+{{ url_for('app.stu_list') }}
+</code></pre><h3 id="4-2-有参数的反向解析url"><a href="#4-2-有参数的反向解析url" class="headerlink" title="4.2 有参数的反向解析url"></a>4.2 有参数的反向解析url</h3><pre><code>{{ url_for('蓝图对象第一个参数.需要跳转到的函数名'， 参数名 = 值) }}
+# 编辑id=3的学生信息
+{{ url_for('app.edit_stu', id=3) }}
+
+get方式向服务器提交数据时的反向解析
+{{ url_for('蓝图的第一个参数.需要跳转到的函数名') }}？参数名=值
+
+如分页中需要看第i页则如下：
+{{ url_for('app.stu_list')}}?page={{ i }}
+</code></pre></div><div class="tags"><a href="/tags/Django/">Django</a></div><div class="post-share"><div class="bdsharebuttonbox"><span style="float:left;line-height: 28px;height: 28px;font-size:16px;font-weight:blod">分享到：</span><a href="#" data-cmd="more" class="bds_more"></a><a href="#" data-cmd="mshare" title="分享到一键分享" class="bds_mshare"></a><a href="#" data-cmd="fbook" title="分享到Facebook" class="bds_fbook"></a><a href="#" data-cmd="twi" title="分享到Twitter" class="bds_twi"></a><a href="#" data-cmd="linkedin" title="分享到linkedin" class="bds_linkedin"></a><a href="#" data-cmd="youdao" title="分享到有道云笔记" class="bds_youdao"></a><a href="#" data-cmd="evernotecn" title="分享到印象笔记" class="bds_evernotecn"></a><a href="#" data-cmd="weixin" title="分享到微信" class="bds_weixin"></a><a href="#" data-cmd="qzone" title="分享到QQ空间" class="bds_qzone"></a><a href="#" data-cmd="tsina" title="分享到新浪微博" class="bds_tsina"></a></div></div><div class="post-nav"><a href="/2018/12/15/centOS与Nginx与uWsgi部署Django项目/" class="next">centOS7+Nginx+uWsgi部署Django项目</a></div><div id="comments"></div></div></div></div><div class="layout-r"><div id="sidebar"><div class="search-pla"></div><div id="toc" class="widget"><div class="widget-title"><i class="fa fa-fei">文章目录</i></div><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、配置数据库"><span class="toc-text">一、配置数据库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、创建模型"><span class="toc-text">二、创建模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、对数据库进行CRUD操作"><span class="toc-text">三、对数据库进行CRUD操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-增加数据"><span class="toc-text">3.1 增加数据</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#a-增加一条"><span class="toc-text">a. 增加一条</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#b-增加多条"><span class="toc-text">b. 增加多条</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-修改数据"><span class="toc-text">3.2 修改数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-删除数据"><span class="toc-text">3.3 删除数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-查询操作"><span class="toc-text">3.4 查询操作</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-4-1-filter和get过滤"><span class="toc-text">3.4.1 filter和get过滤</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-4-2-查询所有"><span class="toc-text">3.4.2 查询所有</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-4-3-对查询集进行排序"><span class="toc-text">3.4.3 对查询集进行排序</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-4-3-模糊查询"><span class="toc-text">3.4.3 模糊查询</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-4-4-条件和逻辑运算组合查询"><span class="toc-text">3.4.4 条件和逻辑运算组合查询</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-4-5-使用paginator进行分页"><span class="toc-text">3.4.5 使用paginator进行分页</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、模板解析地址"><span class="toc-text">四、模板解析地址</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-无参数的反向解析url"><span class="toc-text">4.1 无参数的反向解析url</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-有参数的反向解析url"><span class="toc-text">4.2 有参数的反向解析url</span></a></li></ol></li></ol></div><div class="widget"><div class="widget-title"><i class="fa fa-xie"> 最新文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/12/19/flask中通过ORM对数据库进行CRUD操作/">flask中通过ORM对数据库进行CRUD操作</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/15/centOS与Nginx与uWsgi部署Django项目/">centOS7+Nginx+uWsgi部署Django项目</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/10/rest-framework总结/">rest_framework总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/03/装饰器、中间件和Session/">装饰器、中间件和Session</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/11/30/cookie的使用/">cookie的使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/11/29/模板基础/">模板基础</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/11/29/模型关系之一对多/">模型关系之一对多</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/11/28/ORM查询数据操作/">ORM查询数据操作</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/11/27/认识Django模型/">认识Django模型</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/11/27/初始Django/">初始Django</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-biao"> 标签</i></div><div class="tagcloud"><a href="/tags/Django/" style="font-size: 15px;">Django</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-archive"> 归档</i></div><ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-you"> 友情链接</i></div><ul></ul><a href="https://www.jianshu.com/u/08d01ad78918" title="简书" target="_blank">简书</a><ul></ul><a href="https://github.com/NKactor/NKactor.github.io" title="GitHub" target="_blank">GitHub</a><ul></ul><a href="https://gitee.com/nkactor/events" title="Gitee" target="_blank">Gitee</a></div></div></div></div><a id="totop" href="#top"></a><div id="footer"><div class="footer-info"><p><a href="/baidusitemap.xml">Baidu Site Haritası</a> |  <a href="/atom.xml">订阅</a> |  <a href="/about/">关于</a></p><p>本站总访问量：<i id="busuanzi_container_site_pv"><i id="busuanzi_value_site_pv"></i></i>次</p><p><span> Copyright &copy;<a href="/." rel="nofollow">不知名的小演员.</a></span><span> Theme by<a rel="nofollow" target="_blank" href="https://github.com/chaooo/hexo-theme-BlueLake"> BlueLake.</a></span><span> Count by<a href="http://busuanzi.ibruce.info/"> busuanzi.</a></span><span> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a></span></p></div></div></div><script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js" async></script><script type="text/javascript" src="/js/search.json.js?v=2.0.1"></script><script type="text/javascript" src="/js/toctotop.js?v=2.0.1" async></script><script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["mshare","weixin","tsina","qzone","linkedin","fbook","twi","print","renren","sqq","evernotecn","bdysc","tqq","tqf","bdxc","kaixin001","tieba","douban","bdhome","thx","ibaidu","meilishuo","mogujie","diandian","huaban","duitang","hx","fx","youdao","sdo","qingbiji","people","xinhua","mail","isohu","yaolan","wealink","ty","iguba","h163","copy"],"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["tsina","qzone","weixin","fbook","twi","linkedin","youdao","evernotecn","mshare"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["tsina","qzone","weixin","fbook","twi","linkedin","youdao","evernotecn","mshare"]}};with(document)0[(getElementsByTagName('head')[0]||head).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script></body></html>
