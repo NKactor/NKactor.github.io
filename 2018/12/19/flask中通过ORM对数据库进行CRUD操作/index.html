@@ -4,6 +4,41 @@
 app.config[&apos;SQLALCHEMY_TRACK_MODIFICATIONS&apos;] = Flase
 app.init_app(app)
 </code></pre><h2 id="二、创建模型"><a href="#二、创建模型" class="headerlink" title="二、创建模型"></a>二、创建模型</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask_script <span class="keyword">import</span> SQLAlchemy</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建一个sqlalchemy对象</span></span><br><span class="line">db = SQLAlchemy()</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Student</span><span class="params">(db.Model)</span>:</span></span><br><span class="line">	id = db.Column(db.Integer, primary_key=<span class="keyword">True</span>, autoincrement=<span class="keyword">True</span>)</span><br><span class="line">	name = db.Column(db.String(<span class="number">31</span>), unique=<span class="keyword">True</span>, nullable=<span class="keyword">True</span>)</span><br><span class="line">	phone = db.Column(db.String(<span class="number">11</span>), nullable=<span class="keyword">True</span>)</span><br><span class="line"></span><br><span class="line">	age = db.Column(db.Integer, nullable=Flase)</span><br><span class="line">	gender = db.Column(db.Integer, default=<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment"># flask默认表明就是模型名小写，如果你不需要改变表明就可以不用设置</span></span><br><span class="line"></span><br><span class="line">	__tablename__ = <span class="string">'tb_student'</span></span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp;模型定义中支持的数据类型</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">类型</th>
+<th style="text-align:center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Integer</td>
+<td style="text-align:center">整数</td>
+</tr>
+<tr>
+<td style="text-align:center">String</td>
+<td style="text-align:center">字符串类型（在某些数据库中是可选的如：PostgreSQL）</td>
+</tr>
+<tr>
+<td style="text-align:center">Text</td>
+<td style="text-align:center">长文本</td>
+</tr>
+<tr>
+<td style="text-align:center">DateTime</td>
+<td style="text-align:center">日期和时间，表示为Python中的datetime对象</td>
+</tr>
+<tr>
+<td style="text-align:center">float</td>
+<td style="text-align:center">浮点数</td>
+</tr>
+<tr>
+<td style="text-align:center">Boolean</td>
+<td style="text-align:center">布尔值</td>
+</tr>
+</tbody>
+</table>
 <h2 id="三、对数据库进行CRUD操作"><a href="#三、对数据库进行CRUD操作" class="headerlink" title="三、对数据库进行CRUD操作"></a>三、对数据库进行CRUD操作</h2><h3 id="3-1-增加数据"><a href="#3-1-增加数据" class="headerlink" title="3.1 增加数据"></a>3.1 增加数据</h3><pre><code>在flask中增加数据需要用到SQLAlchemy的一个session回话，这里的session并不是flask请求和响应的回话session
 
 添加数据需要用到
